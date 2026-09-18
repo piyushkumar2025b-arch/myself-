@@ -1,0 +1,179 @@
+{
+  "entities": {
+    "ContactMessage": {
+      "title": "Contact Message",
+      "description": "A contact or inquiry message submitted by a portfolio visitor.",
+      "type": "object",
+      "properties": {
+        "receiptId": {
+          "type": "string",
+          "description": "Unique verification receipt tracking identifier",
+          "minLength": 5,
+          "maxLength": 100
+        },
+        "name": {
+          "type": "string",
+          "description": "Sender's full name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Sender's valid email address",
+          "minLength": 5,
+          "maxLength": 150
+        },
+        "subject": {
+          "type": "string",
+          "description": "Message subject",
+          "maxLength": 200
+        },
+        "message": {
+          "type": "string",
+          "description": "Detailed inquiry message content",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the message",
+          "enum": ["unread", "read", "archived"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of submission"
+        }
+      },
+      "required": ["name", "email", "message", "status", "createdAt"]
+    },
+    "SnorlaxChatLog": {
+      "title": "Snorlax Chat Log",
+      "description": "Visitor interaction log with Snorlax AI mascot.",
+      "type": "object",
+      "properties": {
+        "userMessage": {
+          "type": "string",
+          "description": "The question or prompt asked by the visitor",
+          "maxLength": 1000
+        },
+        "snorlaxReply": {
+          "type": "string",
+          "description": "Snorlax response text",
+          "maxLength": 2000
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp of conversation"
+        }
+      },
+      "required": ["userMessage", "snorlaxReply", "timestamp"]
+    },
+    "ProjectLike": {
+      "title": "Project Like",
+      "description": "Endorsements and like counters for portfolio projects.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "description": "Project identifier"
+        },
+        "count": {
+          "type": "number",
+          "description": "Total endorsements count"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last like"
+        }
+      },
+      "required": ["projectId", "count", "updatedAt"]
+    },
+    "ProjectComment": {
+      "title": "Project Comment",
+      "description": "Public feedback and review comment left on a project.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "description": "Associated project ID"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Commenter display name",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "authorEmail": {
+          "type": "string",
+          "description": "Commenter email address",
+          "minLength": 5,
+          "maxLength": 150
+        },
+        "comment": {
+          "type": "string",
+          "description": "Comment text",
+          "minLength": 3,
+          "maxLength": 2000
+        },
+        "status": {
+          "type": "string",
+          "description": "Moderation status",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["projectId", "authorName", "authorEmail", "comment", "status", "createdAt"]
+    },
+    "PortfolioData": {
+      "title": "Portfolio Data",
+      "description": "Complete portfolio content, configuration, and projects data.",
+      "type": "object",
+      "properties": {
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      }
+    },
+    "TestConnection": {
+      "title": "Test Connection",
+      "description": "Health check document for verifying Firestore server connectivity.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "description": "Ping status"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/test/{testId}": {
+      "schema": "TestConnection",
+      "description": "Health check endpoint to test connection."
+    },
+    "/contact_messages/{messageId}": {
+      "schema": "ContactMessage",
+      "description": "Visitor contact inquiries sent through the portfolio."
+    },
+    "/snorlax_chats/{chatId}": {
+      "schema": "SnorlaxChatLog",
+      "description": "Visitor conversations with Snorlax mascot."
+    },
+    "/project_likes/{projectId}": {
+      "schema": "ProjectLike",
+      "description": "Aggregated project endorsement counts."
+    },
+    "/project_comments/{commentId}": {
+      "schema": "ProjectComment",
+      "description": "Visitor comments submitted for projects."
+    },
+    "/portfolio_data/{docId}": {
+      "schema": "PortfolioData",
+      "description": "Portfolio content and configuration documents."
+    }
+  }
+}

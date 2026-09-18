@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Piyush Kumar Portfolio",
+  "description": "High-performance, modern personal portfolio website featuring 3D visual interactions, editable content architecture, and dark aesthetic with subtle green-cyan-purple gradients.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

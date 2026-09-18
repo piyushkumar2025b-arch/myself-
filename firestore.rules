@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidContactMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'status', 'createdAt']) &&
+             data.keys().size() >= 5 && data.keys().size() <= 7 &&
+             isValidString(data.name, 1, 100) &&
+             isValidString(data.email, 5, 150) &&
+             isValidString(data.message, 1, 3000) &&
+             (!('subject' in data) || isValidString(data.subject, 1, 200)) &&
+             (!('receiptId' in data) || isValidString(data.receiptId, 5, 100)) &&
+             data.status == 'unread' &&
+             isValidString(data.createdAt, 10, 50);
+    }
+
+    function isValidSnorlaxChat(data) {
+      return data.keys().hasAll(['userMessage', 'snorlaxReply', 'timestamp']) &&
+             data.keys().size() == 3 &&
+             isValidString(data.userMessage, 1, 1000) &&
+             isValidString(data.snorlaxReply, 1, 2500) &&
+             isValidString(data.timestamp, 10, 50);
+    }
+
+    function isValidProjectLike(data) {
+      return data.keys().hasAll(['projectId', 'count', 'updatedAt']) &&
+             data.keys().size() == 3 &&
+             isValidString(data.projectId, 1, 100) &&
+             data.count is number && data.count >= 0 && data.count <= 1000000 &&
+             isValidString(data.updatedAt, 10, 50);
+    }
+
+    function isValidProjectComment(data) {
+      return data.keys().hasAll(['projectId', 'authorName', 'authorEmail', 'comment', 'status', 'createdAt']) &&
+             data.keys().size() >= 6 && data.keys().size() <= 7 &&
+             isValidString(data.projectId, 1, 100) &&
+             isValidString(data.authorName, 2, 60) &&
+             isValidString(data.authorEmail, 5, 150) &&
+             isValidString(data.comment, 3, 2000) &&
+             data.status == 'pending' &&
+             isValidString(data.createdAt, 10, 50);
+    }
+
+    // Connection health-check ping
+    match /test/{testId} {
+      allow read: if true;
+    }
+
+    // Contact messages: anyone can submit unread inquiries; only authenticated admin can list, read or update
+    match /contact_messages/{messageId} {
+      allow create: if isValidContactMessage(request.resource.data);
+      allow read: if request.auth != null;
+      allow update, delete: if request.auth != null;
+    }
+
+    // Snorlax chat logs: anyone can log conversations, cannot update or delete
+    match /snorlax_chats/{chatId} {
+      allow create: if isValidSnorlaxChat(request.resource.data);
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // Project likes & endorsements: publicly readable, safe numeric updates
+    match /project_likes/{projectId} {
+      allow read: if true;
+      allow create: if isValidProjectLike(request.resource.data) && request.resource.data.projectId == projectId;
+      allow update: if isValidProjectLike(request.resource.data) &&
+                       request.resource.data.projectId == resource.data.projectId &&
+                       request.resource.data.count >= resource.data.count &&
+                       request.resource.data.count <= resource.data.count + 5;
+      allow delete: if false;
+    }
+
+    // Project comments: public submissions must have status 'pending'; approved comments publicly readable
+    match /project_comments/{commentId} {
+      allow create: if isValidProjectComment(request.resource.data);
+      allow read: if resource.data.status == 'approved' || request.auth != null;
+      allow update, delete: if request.auth != null;
+    }
+
+    // Portfolio configuration and content: publicly readable, updates allowed for portfolio management
+    match /portfolio_data/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

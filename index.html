@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" class="light scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remix Remix Remix Piyush Kumar Portfolio</title>
+    <meta name="description" content="High-performance, modern personal portfolio website featuring 3D visual interactions, editable content architecture, and dark aesthetic with subtle green-cyan-purple gradients." />
+    <meta property="og:title" content="Remix Remix Remix Piyush Kumar Portfolio" />
+    <meta property="og:description" content="High-performance, modern personal portfolio website featuring 3D visual interactions, editable content architecture, and dark aesthetic with subtle green-cyan-purple gradients." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        function isIgnorableExtensionError(msg, filename, stack) {
+          var str = ((msg || '') + ' ' + (filename || '') + ' ' + (stack || '')).toLowerCase();
+          return (
+            str.indexOf('metamask') !== -1 ||
+            str.indexOf('ethereum') !== -1 ||
+            str.indexOf('web3') !== -1 ||
+            str.indexOf('chrome-extension://') !== -1 ||
+            str.indexOf('moz-extension://') !== -1 ||
+            str.indexOf('safari-web-extension://') !== -1
+          );
+        }
+
+        window.addEventListener('error', function(event) {
+          var msg = event.message || (event.error && event.error.message) || '';
+          var file = event.filename || '';
+          var stack = (event.error && event.error.stack) || '';
+          if (isIgnorableExtensionError(msg, file, stack)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reason = event.reason;
+          var msg = (reason && (reason.message || reason.stack || String(reason))) || '';
+          var stack = (reason && reason.stack) || '';
+          if (isIgnorableExtensionError(msg, '', stack)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[var(--portfolio-bg)] text-[var(--portfolio-text)] antialiased selection:bg-emerald-500/25 selection:text-emerald-700 min-h-screen overflow-x-hidden font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-300">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
